@@ -9,25 +9,31 @@ public class LoginManager : MonoBehaviour
     [SerializeField] GameObject NewAccount_Canvas;
     [SerializeField] GameObject Loading_Canvas;
 
-    [SerializeField] InputField ID_Login;
-    [SerializeField] InputField PW_Login;
-    [SerializeField] InputField ID_New;
-    [SerializeField] InputField PW_New;
+
+    [SerializeField] InputField NewAccount_ID;
+    [SerializeField] InputField NewAccount_PW;
+    [SerializeField] InputField Update_Information;
+
+    [SerializeField] InputField Login_ID;
+    [SerializeField] InputField Login_PW;
     // Start is called before the first frame update
-    void Start()
-    {
 
+
+    public void Account_MakeNew()
+    {
+        Singletone_Manager.Singletone_Information.Account_Create_New(NewAccount_ID.text, NewAccount_PW.text);
+        NewAccount_ID.text = "";
+        NewAccount_PW.text = "";
     }
-
-    public void Set()
+    public void Account_Login()
     {
-        Singletone_Manager.Singletone_Information.Login_Check(ID_Login.text, PW_Login.text);
-        ID_Login.text = "";
-        PW_Login.text = "";
+        Singletone_Manager.Singletone_Information.Account_Login(Login_ID.text, Login_PW.text);
+        
+        Login_ID.text = "";
+        Login_PW.text = "";
     }
-
-    void Login()
+    public void Update_UserData()
     {
-
+        Singletone_Manager.Singletone_Information.Update_UserData(Update_Information.text);
     }
 }
