@@ -10,14 +10,13 @@ using UnityEngine;
 
 public class Socket_Client : MonoBehaviour
 {
-
     static byte[] receiveBytes = new byte[1024];
     static Socket ClientSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-    //List<Thread> thread_pool;
-    // Use this for initialization
     private void Awake()
     {
-        ConnectToServer();
+        Thread th = new Thread(new ThreadStart(ConnectToServer));
+        th.Start();
+        //ConnectToServer();
     }
 
     static public void ConnectToServer()
@@ -28,7 +27,7 @@ public class Socket_Client : MonoBehaviour
             try
             {
                 try_count++;
-                ClientSock.Connect(new IPEndPoint(IPAddress.Parse("192.168.0.3"), 9913)); //Loopback 대신 서버컴퓨터 IP 
+                ClientSock.Connect(new IPEndPoint(IPAddress.Parse("192.168.0.7"), 9913)); //Loopback 대신 서버컴퓨터 IP 
             }
             catch (SocketException)
             {
@@ -45,41 +44,47 @@ public class Socket_Client : MonoBehaviour
 
         byte[] buffer_rec = new byte[1024];
         ClientSock.Receive(buffer_rec);
-        ReceiveData( Encoding.Default.GetString(buffer_rec));
-        
+        ReceiveData(Encoding.Default.GetString(buffer_rec));
     }
 
     static public void ReceiveData(string data)
     {
         Debug.Log("서버로부터 받음 : " + data);
         string[] token = data.Split(';');
+    
+        //계정 생성 성공여부 받아오는 부분
         if (token[0] == "NewAccount")
         {
             if (token[1] == "true")
             {
-                Singletone_Manager.Singletone_Information.Success_NewAccount();
+                Singletone_NetWorkManager.Singletone_Information.Success_NewAccount();
             }
             else if (token[1] == "false")
             {
-                Singletone_Manager.Singletone_Information.Failed_NewAccount();
+                Singletone_NetWorkManager.Singletone_Information.Failed_NewAccount();
             }
         }
 
-        else if(token[0] == "Login")
+        //로그인 성공여부 받아오는 부분
+        else if (token[0] == "Login")
         {
             if (token[1] == "true")
             {
-                //아이디 토큰 저장
-                Singletone_Manager.Singletone_Information.Success_Login(token[2]);
+                // 로그인성공 및 데이터토큰 저장
+                    Singletone_NetWorkManager.Singletone_Information.Success_Login(token[2]);
+               
+                    //아이디에 맞는 데이터 단순 로드
+                    Debug.Log("데이터로드 : " + token[3]);
+                    Singletone_NetWorkManager.Singletone_Information.Receive_UserData(token[3]);
             }
             else if (token[1] == "false")
             {
-                Singletone_Manager.Singletone_Information.Failed_Login();
+                Singletone_NetWorkManager.Singletone_Information.Failed_Login();
             }
         }
         else if (token[0] == "Data")
         {
-            Singletone_Manager.Singletone_Information.Load_UserData(token[1]);           
+            Singletone_NetWorkManager.Singletone_Information.Receive_UserData(token[1]);
         }
     }
 }
