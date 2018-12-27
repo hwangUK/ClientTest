@@ -7,21 +7,20 @@ public class UI_Anim : MonoBehaviour
     // Start is called before the first frame update
     public void StartAnim()
     {
-        
-        gameObject.SetActive(true);        
+        transform.gameObject.SetActive(true);
         StartCoroutine(Anima());
-        
+        transform.gameObject.SetActive(false);
     }
 
     IEnumerator Anima()
     {
-        Vector3 saveLocalPos = transform.localPosition;
+        Vector3 saveLocalPos = transform.position;
+
         for (int i=0; i< 12; i++)
         {
-            transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y+ 4.0f, transform.localPosition.z);
-            yield return new WaitForFixedUpdate();
+            transform.position = new Vector3(transform.position.x, transform.position.y+ 4.0f, transform.position.z);
+            yield return null;
         }
-        transform.localPosition = saveLocalPos;
-        gameObject.SetActive(false);
+        transform.position = saveLocalPos;
     }
 }

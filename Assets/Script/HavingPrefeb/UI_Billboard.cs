@@ -4,25 +4,30 @@ using UnityEngine;
 
 public class UI_Billboard : MonoBehaviour
 {
-    Transform billBoard;
+    List<GameObject> billBoard = new List<GameObject>();
+    private int childCount;
     private void Awake()
     {
-        billBoard = transform.GetChild(0).transform;
+        childCount = transform.childCount;
+        
+        for (int i=0; i< childCount; i++)
+        {
+            billBoard.Add(transform.GetChild(i).transform.gameObject);
+        }
+           
         StartCoroutine(BillBoardUpdate());
     }
-    void LateUpdate()
-    {
-        //빌보드 업데이트
-        //billBoard.transform.LookAt(transform.position + (Camera.main.transform.rotation * Vector3.forward), Camera.main.transform.rotation * Vector3.up);
-        //transform.LookAt(Vector3.zero);
-    }
-
     IEnumerator BillBoardUpdate()
     {
         while (true)
         {
-            billBoard.LookAt(transform.position + (Camera.main.transform.rotation * Vector3.forward), Camera.main.transform.rotation * Vector3.up);
-            yield return new WaitForSeconds(0.5f);
+            for(int i=0; i< childCount; i++)
+            {
+                billBoard[i].transform.position = transform.GetChild(i).transform.position;
+                billBoard[i].transform.LookAt(billBoard[i].transform.position + (Camera.main.transform.rotation * Vector3.forward), Camera.main.transform.rotation * Vector3.up);
+                yield return new WaitForFixedUpdate();
+            }
+            yield return new WaitForSeconds(0.8f);
         }        
     }
 }
